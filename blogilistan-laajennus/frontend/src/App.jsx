@@ -9,6 +9,9 @@ import blogService from './services/blogs'
 import loginService from './services/login'
 import BlogPanel from './components/BlogPanel'
 
+import { displayMessage } from './reducers/popupReducer'
+import { useDispatch } from 'react-redux'
+
 const App = () => {
   const [blogs, setBlogs] = useState([])
 
@@ -16,11 +19,10 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
 
-  const [popMsg, setPopMsg] = useState(null)
-  const [popUpType, setPopUpType] = useState('error')
-
   const loginRef = useRef()
   const blogRef = useRef()
+
+  const dispatch = useDispatch()
 
   useEffect(() => {
     blogService.getAll().then((blogs) => {
@@ -38,14 +40,6 @@ const App = () => {
     }
   }, [])
 
-  const popUpHelp = (msg, type) => {
-    setTimeout(() => {
-      setPopMsg(null)
-    }, 5000)
-    setPopMsg(msg)
-    setPopUpType(type)
-  }
-
   const handleLogin = async (e) => {
     e.preventDefault()
     try {
@@ -58,7 +52,7 @@ const App = () => {
       setUsername('')
       setPassword('')
 
-      popUpHelp(`login succesful with ${user.username}`, 'success')
+      dispatch(displayMessage(`login succesful with ${user.username}`, 'ok'))
     } catch (e) {
       setUsername('')
       setPassword('')
@@ -66,7 +60,7 @@ const App = () => {
         '"',
         ''
       )
-      popUpHelp(`${parsedMsg}`, 'error')
+      dispatch(displayMessage(`${parsedMsg}`, 'error'))
       console.log('loginerror', e)
     }
   }
@@ -74,7 +68,7 @@ const App = () => {
   const handleLogout = async () => {
     window.localStorage.removeItem('activeUser')
     setUser(null)
-    popUpHelp(`logout succesful from ${user.username}`, 'success')
+    dispatch(displayMessage(`logout succesful from ${user.username}`, 'ok'))
 
     console.log('removed')
   }
@@ -83,9 +77,11 @@ const App = () => {
     try {
       const resp = await blogService.addBlog(blogObj)
       setBlogs(blogs.concat(resp))
-      popUpHelp(
-        `blog created with title: ${resp.title}, author: ${resp.author}`,
-        'success'
+      dispatch(
+        displayMessage(
+          `blog created with title: ${resp.title}, author: ${resp.author}`,
+          'ok'
+        )
       )
       blogRef.current.toggleVisible()
     } catch (e) {
@@ -93,7 +89,9 @@ const App = () => {
         '"',
         ''
       )
-      popUpHelp(`error while creating a blog: ${parsedMsg}`, 'error')
+      dispatch(
+        displayMessage(`error while creating a blog: ${parsedMsg}`, 'error')
+      )
       console.log('blogcreate error', parsedMsg)
     }
   }
@@ -112,13 +110,17 @@ const App = () => {
       })
       mappedblogs.sort((a, b) => b.likes - a.likes)
       setBlogs(mappedblogs)
-      popUpHelp(`you liked ${blogObj.title}!`, 'success')
+      dispatch(
+        displayMessage(`You liked ${blogObj.title} by ${blogObj.author}`, 'ok')
+      )
     } catch (e) {
       const parsedMsg = JSON.stringify(e.response.data.error).replaceAll(
         '"',
         ''
       )
-      popUpHelp(`error while liking a blog: ${parsedMsg}`, 'error')
+      dispatch(
+        displayMessage(`error while liking a blog: ${parsedMsg}`, 'error')
+      )
       console.log('like error', e)
     }
   }
@@ -128,11 +130,13 @@ const App = () => {
       try {
         await blogService.deleteBlog(id)
         const filteredBlogs = blogs.filter((blog) => blog.id !== id)
-        popUpHelp(`you deleted ${title}!`, 'success')
+        dispatch(displayMessage(`you deleted ${title}!`, 'ok'))
         setBlogs(filteredBlogs)
       } catch (e) {
         const parsedMsg = JSON.stringify(e.response.data.error)
-        popUpHelp(`error while deleting a blog: ${parsedMsg}`, 'error')
+        dispatch(
+          displayMessage(`error while deleting a blog: ${parsedMsg}`, 'error')
+        )
         console.log('delete error', e)
       }
     }
@@ -140,7 +144,7 @@ const App = () => {
 
   return (
     <div>
-      <PopUp popMsg={popMsg} setPopMsg={setPopMsg} popUpType={popUpType} />
+      <PopUp />
       {user ? (
         <>
           <h2>blogs</h2>
