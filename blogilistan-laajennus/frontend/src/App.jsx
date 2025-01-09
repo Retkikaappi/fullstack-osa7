@@ -10,14 +10,18 @@ import loginService from './services/login'
 import BlogPanel from './components/BlogPanel'
 
 import { displayMessage } from './reducers/popupReducer'
-import { useDispatch } from 'react-redux'
+import {
+  getAllBlogs,
+  addOneBlog,
+  deleteBlog,
+  likeBlog,
+} from './reducers/blogReducer'
+import { storageLogin, login, logout } from './reducers/userReducer'
+import { useDispatch, useSelector } from 'react-redux'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
-
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [user, setUser] = useState(null)
+  const blogs = useSelector((state) => state.blogs)
+  const user = useSelector((state) => state.user)
 
   const loginRef = useRef()
   const blogRef = useRef()
@@ -25,127 +29,50 @@ const App = () => {
   const dispatch = useDispatch()
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => {
-      blogs.sort((a, b) => b.likes - a.likes)
-      setBlogs(blogs)
-    })
+    dispatch(getAllBlogs())
   }, [])
 
   useEffect(() => {
     const activeUser = window.localStorage.getItem('activeUser')
     if (activeUser) {
       const parsedUser = JSON.parse(activeUser)
-      setUser(parsedUser)
-      blogService.setUserToken(parsedUser.token)
+      dispatch(storageLogin(parsedUser))
     }
   }, [])
 
   const handleLogin = async (e) => {
     e.preventDefault()
-    try {
-      const user = await loginService.login({ username, password })
-      console.log(user)
-
-      window.localStorage.setItem('activeUser', JSON.stringify(user))
-      blogService.setUserToken(user.token)
-      setUser(user)
-      setUsername('')
-      setPassword('')
-
-      dispatch(displayMessage(`login succesful with ${user.username}`, 'ok'))
-    } catch (e) {
-      setUsername('')
-      setPassword('')
-      const parsedMsg = JSON.stringify(e.response.data.error).replaceAll(
-        '"',
-        ''
-      )
-      dispatch(displayMessage(`${parsedMsg}`, 'error'))
-      console.log('loginerror', e)
-    }
+    dispatch(login(e.target.username.value, e.target.password.value))
+    e.target.username.value = ''
+    e.target.password.value = ''
   }
 
   const handleLogout = async () => {
     window.localStorage.removeItem('activeUser')
-    setUser(null)
-    dispatch(displayMessage(`logout succesful from ${user.username}`, 'ok'))
+    dispatch(logout())
 
-    console.log('removed')
+    console.log('logged out')
   }
 
-  const handleBlog = async (blogObj) => {
-    try {
-      const resp = await blogService.addBlog(blogObj)
-      setBlogs(blogs.concat(resp))
-      dispatch(
-        displayMessage(
-          `blog created with title: ${resp.title}, author: ${resp.author}`,
-          'ok'
-        )
-      )
-      blogRef.current.toggleVisible()
-    } catch (e) {
-      const parsedMsg = JSON.stringify(e.response.data.error).replaceAll(
-        '"',
-        ''
-      )
-      dispatch(
-        displayMessage(`error while creating a blog: ${parsedMsg}`, 'error')
-      )
-      console.log('blogcreate error', parsedMsg)
-    }
+  const handleBlog = (blogObj) => {
+    dispatch(addOneBlog(blogObj))
+    blogRef.current.toggleVisible()
   }
 
   const handleLike = async (blogObj) => {
-    try {
-      const resp = await blogService.editBlog(blogObj)
-      const mappedblogs = blogs.map((blog) => {
-        if (blog.id === blogObj.id) {
-          return {
-            ...blog,
-            likes: resp.likes,
-          }
-        }
-        return blog
-      })
-      mappedblogs.sort((a, b) => b.likes - a.likes)
-      setBlogs(mappedblogs)
-      dispatch(
-        displayMessage(`You liked ${blogObj.title} by ${blogObj.author}`, 'ok')
-      )
-    } catch (e) {
-      const parsedMsg = JSON.stringify(e.response.data.error).replaceAll(
-        '"',
-        ''
-      )
-      dispatch(
-        displayMessage(`error while liking a blog: ${parsedMsg}`, 'error')
-      )
-      console.log('like error', e)
-    }
+    dispatch(likeBlog(blogObj))
   }
 
-  const handleDelete = async ({ title, author, id }) => {
-    if (window.confirm(`Remove blog ${title} by ${author}`)) {
-      try {
-        await blogService.deleteBlog(id)
-        const filteredBlogs = blogs.filter((blog) => blog.id !== id)
-        dispatch(displayMessage(`you deleted ${title}!`, 'ok'))
-        setBlogs(filteredBlogs)
-      } catch (e) {
-        const parsedMsg = JSON.stringify(e.response.data.error)
-        dispatch(
-          displayMessage(`error while deleting a blog: ${parsedMsg}`, 'error')
-        )
-        console.log('delete error', e)
-      }
+  const handleDelete = async (blog) => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+      dispatch(deleteBlog(blog))
     }
   }
 
   return (
     <div>
       <PopUp />
-      {user ? (
+      {user.token ? (
         <>
           <h2>blogs</h2>
           <p>
@@ -169,13 +96,7 @@ const App = () => {
         </>
       ) : (
         <TogglePanel btnLabel="click here to login" ref={loginRef}>
-          <LoginPanel
-            handleLogin={handleLogin}
-            username={username}
-            userInput={({ target }) => setUsername(target.value)}
-            password={password}
-            passInput={({ target }) => setPassword(target.value)}
-          ></LoginPanel>
+          <LoginPanel handleLogin={handleLogin}></LoginPanel>
         </TogglePanel>
       )}
     </div>

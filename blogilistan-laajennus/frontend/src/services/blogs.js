@@ -20,16 +20,8 @@ const addBlog = async (blog) => {
   return resp.data
 }
 
-const editBlog = async ({ user, likes, author, title, url, id }) => {
-  const obj = {
-    user: user.id,
-    likes: likes + 1,
-    author: author,
-    title: title,
-    url: url,
-  }
-
-  const resp = await axios.put(`${baseUrl}/${id}`, obj)
+const editBlog = async (blog, id) => {
+  const resp = await axios.put(`${baseUrl}/${id}`, blog)
   return resp.data
 }
 

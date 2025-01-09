@@ -1,34 +1,16 @@
 import PropTypes from 'prop-types'
 
-const LoginPanel = ({
-  handleLogin,
-  username,
-  password,
-  userInput,
-  passInput,
-}) => {
+const LoginPanel = ({ handleLogin }) => {
   return (
     <div>
       <h2>log in</h2>
       <form onSubmit={handleLogin}>
         <label>
-          username{' '}
-          <input
-            name="username"
-            type="text"
-            value={username}
-            onChange={userInput}
-          />
+          username <input name="username" type="text" />
         </label>
         <br />
         <label>
-          password{' '}
-          <input
-            name="password"
-            type="password"
-            value={password}
-            onChange={passInput}
-          />
+          password <input name="password" type="password" />
         </label>
         <br />
         <button type="submit">Login</button>
@@ -39,8 +21,6 @@ const LoginPanel = ({
 
 LoginPanel.propTypes = {
   handleLogin: PropTypes.func.isRequired,
-  userInput: PropTypes.func.isRequired,
-  passInput: PropTypes.func.isRequired,
 }
 
 export default LoginPanel
