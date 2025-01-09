@@ -1,0 +1,10 @@
+POST http://localhost:3003/api/blogs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InRlc3Rlcm9mYmxvZ3MiLCJpZCI6IjY3NWFkOWFjZDVmNjdjZjlkYjIxN2Q4NiIsImlhdCI6MTczNDAwNzIyNX0.-ZGJx-0FORFKalpx-ZslHQcZUdd6bKGOnMBlxdz0ox4
+content-type: application/json
+
+{
+    "title": "Testi Blog9",
+    "author": "Testi Author",
+    "url": "www.testi.com",
+    "likes": 556
+}
