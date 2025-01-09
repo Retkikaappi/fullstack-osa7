@@ -29,6 +29,11 @@ const blogSlice = createSlice({
     sort(state, action) {
       return state.sort((a, b) => b.likes - a.likes)
     },
+    addComment(state, action) {
+      const { id, comment } = action.payload
+      const blog = state.find((ele) => ele.id === id)
+      blog.comments.push({ comment })
+    },
   },
 })
 
@@ -93,6 +98,24 @@ export const likeBlog = (blog) => {
     }
   }
 }
-export const { addBlog, addAllBlogs, addLike, sort, removeBlog } =
+
+export const commentBlog = (blog, comment) => {
+  return async (dispatch) => {
+    try {
+      const resp = await blogService.postComment(blog, { comment: comment })
+      dispatch(addComment({ id: resp.id, comment }))
+      dispatch(displayMessage(`You commented ${resp.title} succesfully`, 'ok'))
+    } catch (e) {
+      dispatch(
+        displayMessage(
+          `error while commenting a blog: ${e.response.data.error}`,
+          'error'
+        )
+      )
+      console.log('error', e.response.data.error)
+    }
+  }
+}
+export const { addBlog, addAllBlogs, addLike, sort, removeBlog, addComment } =
   blogSlice.actions
 export default blogSlice.reducer

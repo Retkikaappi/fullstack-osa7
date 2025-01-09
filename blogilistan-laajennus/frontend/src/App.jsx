@@ -1,30 +1,23 @@
 import { useState, useEffect, useRef } from 'react'
 
-import Blog from './components/Blog'
 import PopUp from './components/PopUp'
 import LoginPanel from './components/LoginPanel'
 import TogglePanel from './components/TogglePanel'
+import BlogView from './components/BlogView'
+import UsersView from './components/UsersView'
+import UserView from './components/UserView'
+import BlogSingleView from './components/BlogSingleView'
 
-import blogService from './services/blogs'
-import loginService from './services/login'
-import BlogPanel from './components/BlogPanel'
-
-import { displayMessage } from './reducers/popupReducer'
-import {
-  getAllBlogs,
-  addOneBlog,
-  deleteBlog,
-  likeBlog,
-} from './reducers/blogReducer'
+import { getAllBlogs } from './reducers/blogReducer'
 import { storageLogin, login, logout } from './reducers/userReducer'
 import { useDispatch, useSelector } from 'react-redux'
 
+import { Routes, Link, Route } from 'react-router-dom'
+
 const App = () => {
-  const blogs = useSelector((state) => state.blogs)
   const user = useSelector((state) => state.user)
 
   const loginRef = useRef()
-  const blogRef = useRef()
 
   const dispatch = useDispatch()
 
@@ -54,51 +47,33 @@ const App = () => {
     console.log('logged out')
   }
 
-  const handleBlog = (blogObj) => {
-    dispatch(addOneBlog(blogObj))
-    blogRef.current.toggleVisible()
-  }
-
-  const handleLike = async (blogObj) => {
-    dispatch(likeBlog(blogObj))
-  }
-
-  const handleDelete = async (blog) => {
-    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
-      dispatch(deleteBlog(blog))
-    }
-  }
-
   return (
     <div>
       <PopUp />
-      {user.token ? (
-        <>
-          <h2>blogs</h2>
+      <div>
+        <Link to="/blogs">Blogs</Link>
+        <Link to="/users">Users</Link>
+
+        {user.token ? (
           <p>
             logged in as <strong>{user.name}</strong>{' '}
             <button onClick={handleLogout}>logout</button>
           </p>
-
-          <TogglePanel btnLabel="click here to add a new blog" ref={blogRef}>
-            <BlogPanel handleBlog={handleBlog}></BlogPanel>
+        ) : (
+          <TogglePanel btnLabel="click here to login" ref={loginRef}>
+            <LoginPanel handleLogin={handleLogin}></LoginPanel>
           </TogglePanel>
+        )}
+        <h2>Blog app</h2>
+      </div>
 
-          {blogs.map((blog) => (
-            <Blog
-              key={blog.id}
-              blog={blog}
-              handleLike={handleLike}
-              handleDelete={handleDelete}
-              username={user.username}
-            />
-          ))}
-        </>
-      ) : (
-        <TogglePanel btnLabel="click here to login" ref={loginRef}>
-          <LoginPanel handleLogin={handleLogin}></LoginPanel>
-        </TogglePanel>
-      )}
+      <Routes>
+        <Route path="/" element={<div>Nothing here</div>} />
+        <Route path="/blogs" element={<BlogView />} />
+        <Route path="/blogs/:id" element={<BlogSingleView />} />
+        <Route path="/users" element={<UsersView />} />
+        <Route path="/users/:id" element={<UserView />} />
+      </Routes>
     </div>
   )
 }
