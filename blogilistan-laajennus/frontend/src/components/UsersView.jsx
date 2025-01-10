@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getAllUsers } from '../reducers/usersReducer'
 import { Link } from 'react-router-dom'
+import Styled from '../styles'
 
 const UsersView = () => {
   const dispatch = useDispatch()
@@ -21,24 +22,26 @@ const UsersView = () => {
   }
 
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>User</th>
-          <th>Blogs created</th>
-        </tr>
-      </thead>
-      <tbody>
-        {users.map((user) => (
-          <tr key={user.id}>
-            <td>
-              <Link to={`/users/${user.id}`}>{user.name}</Link>
-            </td>
-            <td>{user.blogs.length}</td>
+    <div>
+      <Styled.UserTable>
+        <thead>
+          <tr>
+            <th>User</th>
+            <th>Blogs created</th>
           </tr>
-        ))}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {users.map((user) => (
+            <tr key={user.id}>
+              <td>
+                <Link to={`/users/${user.id}`}>{user.name}</Link>
+              </td>
+              <td>{user.blogs.length}</td>
+            </tr>
+          ))}
+        </tbody>
+      </Styled.UserTable>
+    </div>
   )
 }
 

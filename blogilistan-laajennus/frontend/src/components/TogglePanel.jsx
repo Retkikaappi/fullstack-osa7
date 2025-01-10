@@ -1,5 +1,6 @@
 import { useState, useImperativeHandle, forwardRef } from 'react'
 import PropTypes from 'prop-types'
+import Styled from '../styles'
 
 const TogglePanel = forwardRef((props, ref) => {
   const [visible, setVisible] = useState(false)
@@ -20,11 +21,11 @@ const TogglePanel = forwardRef((props, ref) => {
   return (
     <>
       <div style={showOn}>
-        <button onClick={toggleVisible}>{props.btnLabel}</button>
+        <Styled.Button onClick={toggleVisible}>{props.btnLabel}</Styled.Button>
       </div>
       <div style={showOff}>
         {props.children}
-        <button onClick={toggleVisible}>cancel</button>
+        <Styled.Button onClick={toggleVisible}>cancel</Styled.Button>
       </div>
     </>
   )

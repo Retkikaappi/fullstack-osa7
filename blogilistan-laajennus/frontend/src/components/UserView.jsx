@@ -1,5 +1,6 @@
 import { useSelector } from 'react-redux'
 import { useParams } from 'react-router-dom'
+import Styled from '../styles'
 
 const UserView = () => {
   const { id } = useParams()
@@ -13,15 +14,15 @@ const UserView = () => {
   }
 
   return (
-    <div>
+    <Styled.SingleBlogDiv>
       <h2>{user.name}</h2>
-      <h3>Added blogs:</h3>
+      <p>Added blogs:</p>
       <ul>
         {user.blogs.map((ele) => (
           <li key={ele.index}>{ele.title}</li>
         ))}
       </ul>
-    </div>
+    </Styled.SingleBlogDiv>
   )
 }
 

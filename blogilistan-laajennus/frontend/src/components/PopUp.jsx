@@ -1,4 +1,5 @@
 import { useSelector } from 'react-redux'
+import Styled from '../styles'
 
 const PopUp = () => {
   const { message, type } = useSelector((state) => state.popup)
@@ -8,9 +9,9 @@ const PopUp = () => {
   }
 
   return (
-    <div className={type}>
+    <Styled.PopUp $type={type}>
       <h3>{message}</h3>
-    </div>
+    </Styled.PopUp>
   )
 }
 

@@ -14,6 +14,8 @@ import { useDispatch, useSelector } from 'react-redux'
 
 import { Routes, Link, Route } from 'react-router-dom'
 
+import Styled from './styles'
+
 const App = () => {
   const user = useSelector((state) => state.user)
 
@@ -48,33 +50,36 @@ const App = () => {
   }
 
   return (
-    <div>
-      <PopUp />
-      <div>
-        <Link to="/blogs">Blogs</Link>
-        <Link to="/users">Users</Link>
+    <>
+      <Styled.Global />
+      <Styled.Body>
+        <Styled.Nav>
+          <Link to="/blogs">Blogs</Link>
+          <Link to="/users">Users</Link>
 
-        {user.token ? (
-          <p>
-            logged in as <strong>{user.name}</strong>{' '}
-            <button onClick={handleLogout}>logout</button>
-          </p>
-        ) : (
-          <TogglePanel btnLabel="click here to login" ref={loginRef}>
-            <LoginPanel handleLogin={handleLogin}></LoginPanel>
-          </TogglePanel>
-        )}
-        <h2>Blog app</h2>
-      </div>
+          {user.token ? (
+            <p>
+              logged in as <strong>{user.name}</strong>{' '}
+              <Styled.Button onClick={handleLogout}>logout</Styled.Button>
+            </p>
+          ) : (
+            <TogglePanel btnLabel="click here to login" ref={loginRef}>
+              <LoginPanel handleLogin={handleLogin}></LoginPanel>
+            </TogglePanel>
+          )}
+          <h3>Blog app</h3>
+          <PopUp />
+        </Styled.Nav>
 
-      <Routes>
-        <Route path="/" element={<div>Nothing here</div>} />
-        <Route path="/blogs" element={<BlogView />} />
-        <Route path="/blogs/:id" element={<BlogSingleView />} />
-        <Route path="/users" element={<UsersView />} />
-        <Route path="/users/:id" element={<UserView />} />
-      </Routes>
-    </div>
+        <Routes>
+          <Route path="/" element={<div>Nothing here</div>} />
+          <Route path="/blogs" element={<BlogView />} />
+          <Route path="/blogs/:id" element={<BlogSingleView />} />
+          <Route path="/users" element={<UsersView />} />
+          <Route path="/users/:id" element={<UserView />} />
+        </Routes>
+      </Styled.Body>
+    </>
   )
 }
 

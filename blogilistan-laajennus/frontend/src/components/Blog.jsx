@@ -1,22 +1,16 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import Styled from '../styles'
 
 const Blog = ({ blog, handleLike, handleDelete, username }) => {
   const [view, setView] = useState(false)
-  const blogStyle = {
-    padding: 4,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 2,
-    width: '25%',
-  }
 
   return (
-    <div style={blogStyle}>
+    <Styled.BlogDiv>
       <Link to={`/blogs/${blog.id}`}>
         {blog.title} - {blog.author}
       </Link>
-    </div>
+    </Styled.BlogDiv>
   )
 }
 

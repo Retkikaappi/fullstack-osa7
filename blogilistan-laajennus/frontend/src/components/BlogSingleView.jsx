@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import { likeBlog, deleteBlog, commentBlog } from '../reducers/blogReducer'
+import Styled from '../styles'
 
 const BlogSingleView = () => {
   const dispatch = useDispatch()
@@ -8,16 +9,6 @@ const BlogSingleView = () => {
   const { id } = useParams()
   const { username, token } = useSelector((state) => state.user)
   const blog = useSelector((state) => state.blogs.find((e) => e.id === id))
-
-  const blogStyle = {
-    paddingTop: 2,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 2,
-    width: '25%',
-    lineHeight: 0.1,
-  }
 
   const handleLike = (blogObj) => {
     dispatch(likeBlog(blogObj))
@@ -44,32 +35,25 @@ const BlogSingleView = () => {
   }
 
   return (
-    <>
-      <div style={blogStyle} className="blogCard">
-        <p>title: {blog.title}</p>
-        <p>
-          url: <a href="#">{blog.url}</a>
-        </p>
-        <p>
-          likes: {blog.likes}
-          <button onClick={() => handleLike(blog)}>like</button>
-        </p>
-        <p>author: {blog.author}</p>
-        <p>user: {blog.user.username}</p>
-        {username === blog.user.username && (
-          <button
-            style={{ backgroundColor: 'lightblue' }}
-            onClick={() => handleDelete(blog)}
-          >
-            remove
-          </button>
-        )}
-      </div>
+    <Styled.SingleBlogDiv>
+      <p>title: {blog.title}</p>
+      <p>
+        url: <a href="#">{blog.url}</a>
+      </p>
+      <p>
+        likes: {blog.likes}{' '}
+        <Styled.Button onClick={() => handleLike(blog)}>like</Styled.Button>
+      </p>
+      <p>author: {blog.author}</p>
+      <p>user: {blog.user.username}</p>
+      {username === blog.user.username && (
+        <Styled.Button onClick={() => handleDelete(blog)}>remove</Styled.Button>
+      )}
       <div>
         <h4>Comments</h4>
         <form onSubmit={handleComment}>
-          <input name="comment" type="text" />
-          <button>add comment</button>
+          <Styled.Input name="comment" type="text" />
+          <Styled.Button>add comment</Styled.Button>
         </form>
         <ul>
           {blog.comments.map((ele, index) => (
@@ -77,7 +61,7 @@ const BlogSingleView = () => {
           ))}
         </ul>
       </div>
-    </>
+    </Styled.SingleBlogDiv>
   )
 }
 

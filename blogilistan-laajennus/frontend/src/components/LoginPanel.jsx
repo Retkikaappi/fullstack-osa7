@@ -1,19 +1,15 @@
 import PropTypes from 'prop-types'
+import Styled from '../styles'
 
 const LoginPanel = ({ handleLogin }) => {
   return (
     <div>
-      <h2>log in</h2>
       <form onSubmit={handleLogin}>
-        <label>
-          username <input name="username" type="text" />
-        </label>
+        <Styled.Input name="username" type="text" placeholder="Username" />
         <br />
-        <label>
-          password <input name="password" type="password" />
-        </label>
+        <Styled.Input name="password" type="password" placeholder="Password" />
         <br />
-        <button type="submit">Login</button>
+        <Styled.Button type="submit">Login</Styled.Button>
       </form>
     </div>
   )
